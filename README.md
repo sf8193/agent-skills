@@ -12,3 +12,6 @@ Copy the two folders in `skills/` into `~/.claude/skills/` (Claude Code) or `~/.
 - Written for a Go codebase with a money path (trading). The examples and the checks are Go-flavored (`go test -overlay`, `GOTOOLCHAIN`, `-race`). Swap in your own toolchain's equivalents.
 - Both lean on spawning a fresh agent for review. In Claude Code that is the Agent tool. A reviewer from a different engine shares the fewest assumptions with the builder.
 - "Surface after 2 rounds" is deliberate: if a step is not passing after two review/fix rounds, stop and report instead of rerunning.
+
+## License
+MIT. See `LICENSE`.
