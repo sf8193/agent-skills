@@ -1,12 +1,14 @@
-# design-converge + verified-steps
+# agent-skills
 
-Two Claude Code / Codex skills that work as a pair for risky changes.
+Three Claude Code / Codex skills. `design-converge` and `verified-steps` work as a pair for risky changes. `retro` turns your corrections into durable rules.
 
 1. **design-converge** - settle the design first. Case matrix from the real code, design doc with pseudocode, audit of the design against every case, a written critique from an independent peer, a log of the owner's decisions, and a loop until there are no regressions or gaps. It ends in a `HANDOFF.md` with a step plan.
 2. **verified-steps** - build that plan as small committed steps. Each step is proven mechanically (suite, lint, coverage diff) and then attacked by a fresh adversarial reviewer who must prove every finding by running something, before it is committed.
 
+3. **retro** - after a session, find where you had to correct the agent and propose the smallest edit to `CLAUDE.md`, memory or a skill that would have prevented it. A cheap model collects the pushback moments from the transcript, a strong model checks whether a rule already exists (and why it didn't fire), and nothing is applied without your approval. Includes `extract.py`, which turns a Claude Code or Codex transcript into readable text. Ask for `/retro <session>` or "retro sweep" for a weekly pass.
+
 ## Install
-Copy the two folders in `skills/` into `~/.claude/skills/` (Claude Code) or `~/.agents/skills/` (Codex). To share with a team, put them in `.claude/skills/` inside the repo. Then ask for them by name (`/design-converge`, `/verified-steps`) or describe the work; the descriptions make them trigger on redesigns and large or risky changes.
+Copy the folders in `skills/` into `~/.claude/skills/` (Claude Code) or `~/.agents/skills/` (Codex). To share with a team, put them in `.claude/skills/` inside the repo. Then ask for them by name (`/design-converge`, `/verified-steps`) or describe the work; the descriptions make them trigger on redesigns and large or risky changes.
 
 ## Notes
 - Written for a Go codebase with a money path (trading). The examples and the checks are Go-flavored (`go test -overlay`, `GOTOOLCHAIN`, `-race`). Swap in your own toolchain's equivalents.
