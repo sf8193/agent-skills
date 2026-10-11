@@ -49,6 +49,7 @@ Spawn a new agent from `templates/reviewer-brief.md`. It must not reuse a builde
   - claims to re-prove by mutation (sample at least 10, money-path first);
   - the gate or guard being bypassable (a deleted row, a skipped test, a build failure, a new file);
   - flakiness (`-count=3 -shuffle=on -race`).
+  - new error returns, guards, nil checks or omit-able struct literals the step adds or keeps: run the `error-census` skill on the diff and report every BUG-ONLY row it leaves in.
 - Return a verdict (PASS / PASS WITH FIXES / FAIL) and numbered findings, each with its evidence and the exact fix.
 
 ## 6. Fix, re-check, commit

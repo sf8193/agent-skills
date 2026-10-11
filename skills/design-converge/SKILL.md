@@ -19,14 +19,8 @@ Before judging any design, enumerate the real scenarios from the code as it is t
 
 **Ambiguous input? Ask.** If mapping the code turns up more than one plausible source or input for what the user asked (e.g. "transcripts" could mean chat history, Claude JSONL or Codex rollouts), stop and ask which one before drafting. Never pick on the user's behalf.
 
-## 2b. Error census (only if the design adds, keeps or removes an error return, guard, retry or page; else write "census: n/a")
-Add one column to the section 2 branch table for every error return, guard, fallback, retry and page: the **outside input** that causes it. Write the path as entry point → … → site (file:line), with the value the outside caller passes.
-- No such path: the row is **BUG-ONLY** (only our own code can cause it). "A restart or a stream gap that our code mishandles" is BUG-ONLY, not an outside input.
-- UNVERIFIED rows count as REAL and block convergence until traced or the user rules. A user ruling is logged with its date, and the row reads "REAL, excluded by user decision".
-- A REAL row stays an error, handled in one place.
-- A BUG-ONLY row is **removed by construction**, not guarded: take no input that could be wrong, build values through one constructor, hold the object instead of an ID, give each kind its own type. The design says which one, per row.
-- An unexported error that in-package code still branches on has not been removed.
-- The only runtime guard allowed is one generic report-and-continue guard that logs, pages once and returns nothing. Name the panic or bad state it covers. No per-error guards.
+## 2b. Error census (only if the design adds, keeps or removes an error return, guard, retry, page or a struct of required dependencies; else write "census: n/a")
+Run the `error-census` skill on the design and put its table in the design doc, one row per error, guard, retry, page and omit-able struct literal, with the outside path (entry point → … → site, file:line). It sets the rules: UNVERIFIED rows count as REAL and block convergence; BUG-ONLY rows are removed by construction (one constructor with every argument required, hold the object, own type, unexported error), judged against their net cost; the only runtime guard allowed is one generic report-and-continue guard.
 Deleting a BUG-ONLY guard is not a REGRESSION in section 4 (today's guard is pinned in section 2, then removed by design). A survivor (error, branch, retry or page) is a design defect and blocks convergence.
 
 ## 3. Design doc
