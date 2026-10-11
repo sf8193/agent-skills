@@ -31,12 +31,13 @@ For each row write the path from an outside entry point to the site, with the va
   - hold the object instead of an ID;
   - give each kind its own type;
   - keep the error unexported, and not branched on in-package (that has not removed it).
+  - if none of those is worth its cost, take the cheapest removal: delete the error return and its check. A violation then fails loudly where it happens (a nil call panics at the site) instead of being handled. Deleting is always an option, so a BUG-ONLY error is never kept just because the constructor-style fix is expensive.
 - The only runtime guard allowed is one generic report-and-continue guard that logs, pages once and returns nothing, and only to avoid a panic. Name the panic it covers.
 
-Then ask: **will this make the code better and stronger?** For every proposed removal state the net cost: lines, call sites touched, new types or interfaces, and the failure class it deletes. Reject a removal that costs more than it saves, and say so in the table. Example: a constructor argument added to remove one nil check, which touches ~100 call sites, fails the gate; a ~40-line constructor that makes a forgotten dependency a compile error, removing a crash on startup, passes. The user rules on close calls; do not let scope grow for impossible cases.
+Then ask: **will this make the code better and stronger?** For every proposed removal state the net cost: lines, call sites touched, new types or interfaces, and the failure class it deletes. Reject a form of removal that costs more than it saves, say so in the table, and move to the next cheaper form (down to deleting the check). Example: a constructor argument added to remove one nil check, which touches ~100 call sites, fails the gate, so delete the check and its test instead; a ~40-line constructor that makes a forgotten dependency a compile error, removing a crash on startup, passes. The user rules on close calls; do not let scope grow for impossible cases.
 
 ## 4. Output
-One table, one row per item: `site | kind | outside path | REAL / BUG-ONLY / UNVERIFIED | mitigation | net cost | decision (remove / keep / reject: costs more)`. A survivor (a BUG-ONLY row left in without a reason) is a defect. UNVERIFIED rows block approval.
+One table, one row per item: `site | kind | outside path | REAL / BUG-ONLY / UNVERIFIED | mitigation | net cost | decision (remove: <form> / keep (REAL only))`. A BUG-ONLY row with decision "keep" is a defect unless the user ruled to keep it, with the date. UNVERIFIED rows block approval.
 
 ## Audit mode (existing code)
 Run it on a package the user names, not on a diff. Rank BUG-ONLY rows by the failure class they would delete (a process crash or a wrong-sized order first, a log line last). Each accepted removal becomes one `verified-steps` step; do not bundle them. Start with the packages that hold the most error handling.
