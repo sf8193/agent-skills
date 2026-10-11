@@ -68,6 +68,5 @@ Apply the fixes. If a fix was non-trivial, run a short second review focused on 
 - Update memory or the handoff doc with the decisions and where things live.
 
 ## Engine notes (Claude Code and Codex)
-Install: put this folder in `~/.claude/skills/` (Claude Code) or `~/.agents/skills/` (Codex), or in `.claude/skills/` inside a repo to share it with the team.
 - **Spawning a fresh agent:** in Claude Code, use the Agent tool. In Codex, use its sub-agent tool if one is available; otherwise run `codex exec --skip-git-repo-check -C <reviewer-worktree> "<brief>"`, which gets a new context, and read its final message.
 - **Cross-engine review works best:** a reviewer from the *other* engine (Claude builds, Codex reviews, or the reverse) shares the fewest assumptions with the builder. If a live session from the other engine is available, prefer it as the reviewer or peer.
