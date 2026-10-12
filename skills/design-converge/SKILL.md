@@ -1,6 +1,6 @@
 ---
 name: design-converge
-description: Converge on a design before building a non-trivial change. The steps are a case matrix taken from the real code, a design doc with pseudocode, an audit of the design against every case, written critique from an independent peer, a log of the user's decisions, and a loop until there are no regressions or gaps. It ends in a handoff doc with a step plan for /verified-steps. Use it when the user wants to redesign or rethink something, asks "how should we…", "what's the right design", "let's talk through…", or wants to fix a class of recurring bugs. Use it for any new feature or design question that will turn into a build, even if the user doesn't name the skill. Not for mechanical work (cleanups, renames) or small fixes.
+description: Converge on a design before building a non-trivial change. The steps are a case matrix taken from the real code, a design doc with pseudocode, an audit of the design against every case, written critique from an independent peer, a log of the user's decisions, and a loop until there are no regressions or gaps. It ends in a handoff doc with a step plan for /verified-steps. Use it when the user wants to redesign or rethink something, asks "how should we…", "what's the right design", "let's talk through…", or wants to fix a class of recurring bugs. Use it for any larger or open-ended feature, and for any design question that will turn into a build, even if the user doesn't name the skill. Not for mechanical work (cleanups, renames) or small fixes.
 ---
 
 # Design converge
