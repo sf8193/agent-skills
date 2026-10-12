@@ -24,10 +24,10 @@ Split the goal into steps. Each step:
 - has a clear scope: which packages or files it touches, and whether it may change prod code or only tests;
 - has an **exit criterion** that a command can check, e.g. "the coverage union is unchanged", "all DB tests pass with no .env", "the gate passes under the CI toolchain".
 
-Post the plan and wait for approval. Decisions that belong to the user (keep vs. delete planned code, fix vs. pin behavior) go to them as questions, not guesses.
+Post the plan and wait for approval. **The approved plan is a contract.** If you drop, add, reorder or re-scope a step, or change what "done" means, post the change and the reason, then wait for a go, before you build it. Never absorb a plan change into a step report. Decisions that belong to the user (keep vs. delete planned code, fix vs. pin behavior) go to them as questions, not guesses.
 
 ## 2. Brief as a file
-Write `STEPn.md` in the scratchpad from `templates/builder-brief.md`. The builders and the reviewer read the same file, so "done" means the same thing to both. Include what is out of scope and what must not be touched (another session's worktrees or DB containers, the dev DB, planned-but-unused code).
+Write `STEPn.md` in the scratchpad from `templates/builder-brief.md`. The builders and the reviewer read the same file, so "done" means the same thing to both. Paste the approved plan text for this step verbatim into it, under "Approved plan". Include what is out of scope and what must not be touched (another session's worktrees or DB containers, the dev DB, planned-but-unused code).
 
 ## 3. Build
 - Run builders in parallel only on **disjoint** scopes, such as one builder per package group. They share a worktree, so they must not commit, must not run the whole-repo suite, and must not edit prod code for experiments. Use `go test -overlay` for mutations. It doesn't work with `-cover` on newer Go; use a scratch copy for that.
@@ -50,6 +50,7 @@ Spawn a new agent from `templates/reviewer-brief.md`. It must not reuse a builde
   - the gate or guard being bypassable (a deleted row, a skipped test, a build failure, a new file);
   - flakiness (`-count=3 -shuffle=on -race`).
   - new error returns, guards, nil checks or omit-able struct literals the step adds or keeps: run the `error-census` skill on the diff and report every BUG-ONLY row it leaves in.
+- Compare the diff and the report to the "Approved plan" in the brief. List every difference. A change that was not posted to the user beforehand is a FAIL, whatever the code quality.
 - Return a verdict (PASS / PASS WITH FIXES / FAIL) and numbered findings, each with its evidence and the exact fix.
 
 ## 6. Fix, re-check, commit

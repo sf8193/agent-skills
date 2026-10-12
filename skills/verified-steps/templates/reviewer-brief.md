@@ -8,6 +8,7 @@ Known facts, so you don't redo them: <e.g. suite green, coverage union dropped f
 Do NOT edit <worktree>. Create your own worktree: `git -C <repo> worktree add --detach /private/tmp/<name> <base>`, apply the diff, copy any needed .env, and remove the worktree at the end. Never touch <dev DB / other sessions' resources>.
 
 ## Check
+0. **Plan vs diff:** read the "Approved plan" in <STEPn.md>. List every difference between it and the diff or the builder's "Plan vs actual" table. A dropped, added, reordered or re-scoped item that was not posted to the user beforehand is a FAIL, whatever the code quality.
 1. **Scope:** only the allowed files changed; nothing is missing or out of scope. Diff the test/func lists before vs. after, and account for every deletion.
 2. **Nothing weakened:** check every changed assertion. A deleted, loosened, or re-scoped check needs a justification that holds up.
 3. **Proof re-run:** re-apply at least 10 of the claimed mutations (money-path first). Each must FAIL the tests that remain. List every one that survives.
