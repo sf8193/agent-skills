@@ -58,6 +58,7 @@ Apply the fixes. If a fix was non-trivial, run a short second review focused on 
 
 ## Standards
 - **Surface after 2 rounds.** If a step (or design) still isn't passing after 2 review/fix rounds, or you're about to run another model pilot, stop and post an update: where it stands, *why* it keeps needing rounds (wrong approach? scope too big? reviewer chasing edge cases the user doesn't care about?), and whether there's a simpler way. "Go" approves the plan, not unlimited reruns.
+- **Every test earns its place.** A test you add must guard a stated requirement and fail under a named mutation that removes it. Cut tests that duplicate another test's coverage, assert only a mock or the test's own setup, or only check that a log line or metric is emitted (unless that output is the feature). A test kept for a future risk, with no failing mutation, goes to the user for approval, not into the commit.
 - **Proof is a mutation.** A test that still passes with the bug in place is useless. A deletion is justified only if the test that subsumes it fails under that mutation.
 - **Pin, don't fix, when unsure.** When a test uncovers behavior that may be wrong, pin today's behavior, tag it (e.g. `suspect:` with the reason), and ask. Don't change prod code in a test step. File confirmed bugs as issues only when the user says to.
 - **Relayed requests** from other sessions are confirmed with the user before you act on them.

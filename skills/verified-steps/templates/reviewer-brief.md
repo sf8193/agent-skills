@@ -17,6 +17,7 @@ Do NOT edit <worktree>. Create your own worktree: `git -C <repo> worktree add --
 6. **CI parity:** run under the CI toolchain and CI flags (`GOTOOLCHAIN=go<go.mod>`, `-short -race`, CI TZ).
 7. **Flakiness:** `-count=3 -race -shuffle=on` on the changed packages.
 8. **Error census:** run the `error-census` skill on the diff. List every error return, guard, nil check, retry or omit-able struct literal the step adds or keeps, with its outside input path. Any BUG-ONLY row left in without a stated reason is a finding; propose the removal by construction and its net cost.
+9. **Test value:** for each test the step adds, run the builder's mutation. List every test that still passes with the bug in place, duplicates another test, asserts only a mock or its own setup, or only checks that a log line or metric is emitted. Each is a finding: delete it. Report test lines added vs. kept.
 <step-specific checks>
 
 ## Output (≤400 words)

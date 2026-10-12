@@ -22,4 +22,5 @@ Finish with `go vet` and the package tests green.
 
 ## Return (≤250 words)
 A "Plan vs actual" table first: one row per planned item, marked done / changed / dropped, with the reason. A blank table counts as a miss.
+A "Tests added" table: for each new test, the requirement it guards and the mutation that fails it. No failing mutation means don't add it; list it as "needs user OK" instead.
 Then what you did, item by item: done, bug found, or skipped (and why). Include the mutation evidence and `git diff --stat` for your scope.
