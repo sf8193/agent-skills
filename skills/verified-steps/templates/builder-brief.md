@@ -4,6 +4,9 @@ Worktree: <path> (branch <branch>, HEAD <sha>). Don't commit; the orchestrator c
 Scope: EDIT ONLY <packages/files>. Other builders are editing <other scopes> in the same worktree at the same time.
 Allowed: <tests only | prod in X>. Not allowed: <prod changes, testdata, other sessions' resources, the dev DB>.
 
+## Approved plan (verbatim from the user-approved plan; do not deviate, report any needed change instead of making it)
+<paste the step text>
+
 ## Do
 <exact items, taken from the plan or report, with file:line where known>
 
@@ -18,4 +21,5 @@ Allowed: <tests only | prod in X>. Not allowed: <prod changes, testdata, other s
 Finish with `go vet` and the package tests green.
 
 ## Return (≤250 words)
-What you did, item by item: done, bug found, or skipped (and why). Include the mutation evidence and `git diff --stat` for your scope.
+A "Plan vs actual" table first: one row per planned item, marked done / changed / dropped, with the reason. A blank table counts as a miss.
+Then what you did, item by item: done, bug found, or skipped (and why). Include the mutation evidence and `git diff --stat` for your scope.
