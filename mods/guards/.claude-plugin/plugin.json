@@ -1,0 +1,5 @@
+{
+  "name": "guards",
+  "description": "Personal hydra mod: blocks the Bash commands behind past incidents",
+  "version": "0.1.0"
+}
