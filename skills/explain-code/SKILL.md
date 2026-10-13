@@ -1,6 +1,6 @@
 ---
 name: explain-code
-description: Explain a design, bug, review, or status to the user so they see the whole solution before any detail. Use whenever you present a design, a plan, a PR review, a root cause, or a status that asks them to decide, and whenever they say "what do you mean", "I'm lost", or "I don't get it". Called by design-converge. Not for one-line answers.
+description: Explain code, a design, bug, review, or status to the user so they see the whole solution before any detail. Use whenever the user asks you to explain code ("explain this code", "walk me through this", "how does X work"), and whenever you present a design, a plan, a PR review, a root cause, or a status that asks them to decide. Also use when they say "what do you mean", "I'm lost", or "I don't get it". Called by design-converge. Not for one-line answers.
 ---
 
 # Explain code
