@@ -42,7 +42,7 @@ Use a peer with different context:
 The exchange lives in an append-only `discussion.md` with numbered turns (`## <name> — <n>`); see `templates/discussion.md`. The peer answers specific questions and writes a verdict. Nothing counts as decided until the user signs off.
 
 ## 6. Log the user's decisions
-Keep a decisions log in the handoff (a date, the decision, why). Present choices as short options with a recommendation, and ask for anything that is the user's to decide rather than guessing. Pin behavior you aren't sure is wrong rather than "fixing" it.
+Keep a decisions log in the handoff (a date, the decision, why). Present every design, case matrix and choice to the user with the `explain-code` skill (map first, walkthrough before any decision). Present choices as short options with a recommendation, and ask for anything that is the user's to decide rather than guessing. Pin behavior you aren't sure is wrong rather than "fixing" it.
 
 ## 7. Loop until converged
 Revise the design into `design_v2.md` and so on, then re-audit only the affected cases. The design has converged when:
