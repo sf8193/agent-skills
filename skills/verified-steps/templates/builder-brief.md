@@ -15,6 +15,7 @@ Allowed: <tests only | prod in X>. Not allowed: <prod changes, testdata, other s
 - For experiments on prod code, use `go test -overlay`. Never edit prod files in this worktree.
 - If a correct test FAILS on the current code, you've found a real bug. Don't change prod code and don't weaken the assertion. Report the bug with its input, expected value, actual value, and file:line.
 - Skip anything marked for another step or for the user to decide.
+- Write the fewest specs that catch a realistic regression. Don't test constants, trivial round trips, private helpers, or the same rule once per surface. Each spec states the regression it guards.
 
 ## Proof required
 <e.g. for each merge, a mutation the original tests caught that the merged test still catches; for each strengthened test, a mutation that now fails it>
