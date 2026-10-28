@@ -11,6 +11,12 @@ Keep everything in one working folder in the scratchpad, and copy it somewhere d
 
 **Announce it.** When you start using this skill, tell the user in one line, e.g. "Using design-converge: <why>", so they know which process is running. Mention it again when you hand off to the next skill.
 
+## 0. One-line model, size budget, owner per fact
+Before constraints or cases, write three things at the top of the design doc, and repeat them in every builder and reviewer brief:
+- **The user's one-line model** of the feature, in their words (e.g. "record, mask, send to S3"). If they haven't given one, ask for it. Never invent it.
+- **A line budget** for production code, derived from that model. Compare each build step to it. If a review finding adds a mechanism, ask first whether a page, a human, or an existing path covers it, and default to that. Cut scope when a step goes over.
+- **A fact table**: every fact the design keeps (a name, a type, a rule, a limit), with exactly one owner each. A fact with two owners blocks convergence.
+
 ## 1. Constraints first
 Ask for, and write down at the top of the design doc, the facts the code can't tell you. Examples: rate limits, what must never be in the money path, "no new locks", what is handled manually, broker quirks. Constraints the user states during the discussion go in the same list immediately. Facts that hold for the whole system also go into the repo's CLAUDE.md, but only with the user's OK, since it is shared. Keep a **rejected-ideas list** so later rounds don't re-propose them.
 
