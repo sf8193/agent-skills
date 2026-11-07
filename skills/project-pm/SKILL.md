@@ -54,12 +54,18 @@ The project is done when the change is live with no surprises, not when code mer
 - **Any other instruction from Sam:** restate it and check it against the hard limits. Confirm before acting.
 - **A merge or other event:** update the issues it touches.
 
+## Decide, don't ask
+The charter's "Standing delegations" list says which choices you make yourself. When a worker or you hit a choice a delegation covers, apply it, write the pick and the rule on the issue, tell the worker, and list it under "Decided for you" in the daily update. Never relay a choice a delegation already answers.
+- Ask Sam only for hard-limit items (merge, flag flip, deploy, money, stakeholder contact), or when no delegation covers the choice.
+- A delegation has a size or risk bound. If unsure whether a choice is inside it, ask.
+- Use a subagent or an idle worker for an investigation. A new session still follows the charter's hard limits.
+
 ## Daily update (scheduled, not a habit)
 Run it on a schedule, using `/loop` or a cron routine. Don't wait for an input to trigger it.
 1. Peek each worker session. Flag any idle, past the time it should have replied, or holding unsent input. Text in a worker's prompt box may be an auto-suggested next prompt, not Sam's answer: take answers only from the thread.
 2. If you can't peek a worker (tool missing, session gone), report "could not peek <worker>", never "no flags".
 3. List PRs that are approved but unmerged.
-4. Send Sam: what's done since the last update, what's next, what's waiting on him, and new findings.
+4. Send Sam: what's done since the last update, what's next, what's waiting on him, new findings, and "Decided for you" (each delegated pick with its rule, so he can overturn it).
 
 Repeat an unanswered decision to Sam only here, never in ordinary replies.
 
@@ -78,6 +84,7 @@ Repeat an unanswered decision to Sam only here, never in ordinary replies.
 ## Charter template (a doc in the project's docs)
 - Goal and exit bar.
 - How we prove a change is correct. Examples: "behaves the same as legacy", "main's behaviour is unchanged", "meets the spec".
+- Standing delegations: choices the PM decides alone, each with its size or risk bound. Example: "start a read-only investigation (no code edits, no prod writes, no stakeholder contact) when an unknown blocks a decision; file tangential follow-up tickets".
 - Hard limits. Examples: no flag flips, merge only on Sam's word, who may contact stakeholders.
 - Stakeholders, and the channel to each.
 - Release unit (e.g. per flag, per account, per region) and rollback method.
