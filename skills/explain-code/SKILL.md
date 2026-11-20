@@ -54,3 +54,4 @@ List every noun the user has not used themselves. For each one, read what it doe
 - Claim a change is "small" without the line count. Count the lines before you send. "Not counted yet" leaves the reader unable to judge size.
 - Restate an explanation that didn't land. Walk through the user's exact scenario instead.
 - Lead with the verdict, keep sentences to 25 words, and use one word per concept.
+- Paste Mermaid text into chat. Write the `.mmd` file; the mod posts the picture. A merge ask opens with what the PR does, in plain words.
