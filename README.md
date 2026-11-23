@@ -1,15 +1,14 @@
 # agent-skills
 
-Five Claude Code / Codex skills and two Claude Code mods. `design-converge` and `verified-steps` work as a pair for risky changes, and both call `error-census`. `retro` turns your corrections into durable rules.
+Seven Claude Code / Codex skills and two Claude Code mods. `design-converge` and `verified-steps` work as a pair for risky changes, and both call `error-census`. `overnight-steps` runs a user-supplied list unattended through `verified-steps`. `retro` turns your corrections into durable rules.
 
 1. **design-converge** - settle the design first. Case matrix from the real code, design doc with pseudocode, audit of the design against every case, a written critique from an independent peer, a log of the owner's decisions, and a loop until there are no regressions or gaps. It ends in a `HANDOFF.md` with a step plan.
 2. **verified-steps** - build that plan as small committed steps. Each step is proven mechanically (suite, lint, coverage diff) and then attacked by a fresh adversarial reviewer who must prove every finding by running something, before it is committed.
-
-3. **error-census** - find every way the code can fail or be built wrong (error returns, guards, nil checks, retries, struct literals that can omit a field), trace which ones outside input can really cause, and remove the rest by construction when the removal is worth its cost. Called by `design-converge` and the `verified-steps` reviewer, or run on its own against a package as a cleanup audit.
-
-4. **retro** (tuned for Hydra sessions; edit the lookup and paths for your setup) - after a session, find where you had to correct the agent and propose the smallest edit to `CLAUDE.md`, memory or a skill that would have prevented it. A cheap model collects the pushback moments from the transcript, a strong model checks whether a rule already exists (and why it didn't fire), and nothing is applied without your approval. Includes `extract.py`, which turns a Claude Code or Codex transcript into readable text. Ask for `/retro <session>` or "retro sweep" for a weekly pass.
-
-5. **explain-code** - show the whole solution before any detail. Pain, a map of 3 to 5 pieces, one real walkthrough, changes per piece, then the decisions. A term check defines every noun the reader hasn't used. `design-converge` calls it.
+3. **overnight-steps** - run a user-supplied list of product or code tasks unattended through `verified-steps`. When unsure on design or scope, orient to the repo's invariants, pick the best long-term solution, log the choice in `DECISIONS.md`, and keep going; end with an ordered PR stack, decision bullets, and an honest invariant audit.
+4. **error-census** - find every way the code can fail or be built wrong (error returns, guards, nil checks, retries, struct literals that can omit a field), trace which ones outside input can really cause, and remove the rest by construction when the removal is worth its cost. Called by `design-converge` and the `verified-steps` reviewer, or run on its own against a package as a cleanup audit.
+5. **retro** (tuned for Hydra sessions; edit the lookup and paths for your setup) - after a session, find where you had to correct the agent and propose the smallest edit to `CLAUDE.md`, memory or a skill that would have prevented it. A cheap model collects the pushback moments from the transcript, a strong model checks whether a rule already exists (and why it didn't fire), and nothing is applied without your approval. Includes `extract.py`, which turns a Claude Code or Codex transcript into readable text. Ask for `/retro <session>` or "retro sweep" for a weekly pass.
+6. **explain-code** - show the whole solution before any detail. Pain, a map of 3 to 5 pieces, one real walkthrough, changes per piece, then the decisions. A term check defines every noun the reader hasn't used. `design-converge` calls it.
+7. **project-pm** - act as project manager for a multi-session engineering project: order work in the project's tracker, verify worker reports against the project's rollout ladder, and spot blocked workers.
 
 ## Mods
 Claude Code mods (v2.1.287+), in `mods/`. Load one with `claude --plugin-dir mods/<name>`.
