@@ -18,6 +18,7 @@ Do NOT edit <worktree>. Create your own worktree: `git -C <repo> worktree add --
 7. **Flakiness:** `-count=3 -race -shuffle=on` on the changed packages.
 8. **Error census:** run the `error-census` skill on the diff. List every error return, guard, nil check, retry or omit-able struct literal the step adds or keeps, with its outside input path. Any BUG-ONLY row left in without a stated reason is a finding; propose the removal by construction and its net cost.
 9. **Test value:** for each test the step adds, run the builder's mutation. List every test that still passes with the bug in place, duplicates another test, asserts only a mock or its own setup, or only checks that a log line or metric is emitted. Each is a finding: delete it. Report test lines added vs. kept.
+10. **Code rules and contracts:** run the `pr-review` skill's Pass A on the diff (its contracts lens and the user's CLAUDE.md code rules; skip the diagram and the report). Each rule the step's added code breaks is a finding, named by rule, with file and line.
 <step-specific checks>
 
 ## Output (≤400 words)

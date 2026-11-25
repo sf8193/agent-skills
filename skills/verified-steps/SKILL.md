@@ -50,6 +50,7 @@ Spawn a new agent from `templates/reviewer-brief.md`. It must not reuse a builde
   - the gate or guard being bypassable (a deleted row, a skipped test, a build failure, a new file);
   - flakiness (`-count=3 -shuffle=on -race`).
   - new error returns, guards, nil checks or omit-able struct literals the step adds or keeps: run the `error-census` skill on the diff and report every BUG-ONLY row it leaves in.
+  - code that breaks the user's CLAUDE.md code rules or has a weak contract: run the `pr-review` skill's Pass A on the diff and report each broken rule by name.
 - Compare the diff and the report to the "Approved plan" in the brief. List every difference. A change that was not posted to the user beforehand is a FAIL, whatever the code quality.
 - Return a verdict (PASS / PASS WITH FIXES / FAIL) and numbered findings, each with its evidence and the exact fix.
 
