@@ -11,21 +11,21 @@ Read-only on the code under review. Findings are guesses until traced. A wrong f
 
 ## 1. Orient
 
-- Find the stack order: for each PR, `gh pr view <n> --json baseRefName,headRefName,headRefOid`. A PR whose base is another PR's head is stacked on it. Review at the top head.
-- Review in a detached worktree at the top head (`git worktree add --detach`), never in a shared checkout. Fetch before you read; shared checkouts are stale.
-- Read the repo's own review rules first (`REVIEW.md`, `CLAUDE.md`, `AGENTS.md`, a repo review skill or command) and the project's decisions doc. Do not reopen anything decided there. Apply the rules below on top.
+- Find the stack order: for each PR, `gh pr view <n> --json baseRefName,headRefName,headRefOid,files`. A PR whose base is another PR's head is stacked on it. Review at the top head. A PR based on `main` is a stack of one; skip the rest of this bullet.
+- Review in a detached worktree at the top head (`git worktree add --detach <worktree dir>/<repo>-review-<pr> <headRefOid>`), never in a shared checkout. Use the worktree directory the user's CLAUDE.md names. Fetch before you read; shared checkouts are stale.
+- Read the repo's own review rules first (`REVIEW.md`, `CLAUDE.md`, `AGENTS.md`, a repo review skill or command) and the project's decisions doc. Do not reopen anything decided there. Apply the rules below on top. If the repo's rules define finding strengths or list what CI already blocks, use theirs in place of §4's strengths, and spend no findings on what CI blocks.
 - Read the PR title and description before the diff. Check the diff does what they say: leftovers of a removal, behaviour the description omits, claims (a flag, a test, a migration) the diff lacks.
 - Say a one-line stakes statement: what a wrong swap, balance or state change costs here.
 
 ## 2. Read the whole production diff, then the specs
 
 - Read every production file in the stack before judging any line. The same fact is often decided in several places; you only see that with the whole diff.
-- Map where each changed function or accessor is called (`grep -rn`), and count call sites. A changed meaning with many unchanged callers is an integration finding.
+- Map where each changed (not new) function or accessor is called (`grep -rn`), and count call sites. A changed meaning with many unchanged callers is an integration finding.
 - Read specs second, to see what the author thinks the behaviour is.
 
 ## 3. Lenses
 
-Apply each, and name the file and line.
+Walk each. Raise only the lenses that produce a finding, with file and line; do not list empty ones.
 
 1. **One owner per fact.** Anything derived in two places, any copy kept in sync (a column that mirrors another, an id matched by string, the same query written twice). Name the owner it should have.
 2. **No impossible-state code.** A guard, nil check, raise, rescue, retry or else-branch needs a traced outside-input path or a real concurrent writer. If only our own code reaches it, the fix is to make the case unrepresentable (hold the object, not an id; pass the value in), not to guard it. A guard that exists only to narrow a type is this finding. A spec that asserts the impossible state belongs to the same finding.
@@ -41,6 +41,7 @@ Apply each, and name the file and line.
 - Trace a call from a live entry point, or find a second independent signal. A grep hit, a type or a comment is not proof.
 - Trace read paths as well as write paths. State what your evidence covers: a "never" is only as strong as the data behind it. Label anything not proven `unverified`.
 - Before "X is missing", run the search and keep the empty output.
+- Keep a short list of candidates you cleared, each with the code that cleared it (for example, the balance query that already subtracts the pending transfer). Report it in §7.
 - Say how the state would have to arise. "This can't happen" and "this can happen" both need the path.
 - For each finding state three things: did the author show awareness, what happens if it fires in production, how often. Aware, low risk and rare: drop it. High risk keeps it. Unclear: raise it as a question.
 - Give each finding a strength: **Block** (silent, touches money or state, or already caused an incident; quote the line and the concrete input), **Raise** (unproven from the diff; say what you checked and what would settle it), **Note** (naming, duplication, grouped once).
@@ -68,6 +69,7 @@ Posting under the user's account needs their word for that PR, unless they alrea
 ## 7. Report to the user
 
 - Line 1 is the verdict. Then one real example. Then the decisions, each naming its object.
+- Add one line per cleared candidate from §4, so the user sees it was checked.
 - Say what you covered and what you did not (PRs not read, specs not read, mutation only on one file).
 - Mark unverified items. Do not pass off a bot's or author's claim as checked.
 - Plain words. Define any code name or label the user has not used.
