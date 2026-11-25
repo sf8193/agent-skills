@@ -1,6 +1,6 @@
 ---
 name: pr-review
-description: Adversarially review a PR or a stack of PRs and walk the user through what you found. Read the whole production diff, check it against the team's rules (one owner per fact, no impossible-state code, decide then act), trace every finding to a live entry point before raising it, mutation-test the specs, post inline comments on the PR that adds each line, then sort the author's replies and own the points you got wrong. Use when asked to review, adversarially review, or "lmk what you find" on a PR, a stack, or a branch, and for re-reviews after the author replies. Not for building (use verified-steps) or designing (use design-converge).
+description: Adversarially review a PR or a stack of PRs and walk the user through what you found. Read the whole production diff, judge the architecture and contracts first (with a mermaid diagram), then correctness, against the team's own code rules (one owner per fact, no impossible-state code, decide then act), trace every finding to a live entry point before raising it, mutation-test the specs, post inline comments on the PR that adds each line, then sort the author's replies and own the points you got wrong. Use when asked to review, adversarially review, or "lmk what you find" on a PR, a stack, or a branch, and for re-reviews after the author replies. Not for building (use verified-steps) or designing (use design-converge).
 ---
 
 # PR review
@@ -15,7 +15,6 @@ Read-only on the code under review. Findings are guesses until traced. A wrong f
 - Review in a detached worktree at the top head (`git worktree add --detach <worktree dir>/<repo>-review-<pr> <headRefOid>`), never in a shared checkout. Use the worktree directory the user's CLAUDE.md names. Fetch before you read; shared checkouts are stale.
 - Read the repo's own review rules first (`REVIEW.md`, `CLAUDE.md`, `AGENTS.md`, a repo review skill or command) and the project's decisions doc. Do not reopen anything decided there. Apply the rules below on top. If the repo's rules define finding strengths or list what CI already blocks, use theirs in place of §4's strengths, and spend no findings on what CI blocks.
 - Read the PR title and description before the diff. Check the diff does what they say: leftovers of a removal, behaviour the description omits, claims (a flag, a test, a migration) the diff lacks.
-- Say a one-line stakes statement: what a wrong swap, balance or state change costs here.
 
 ## 2. Read the whole production diff, then the specs
 
@@ -29,27 +28,28 @@ Judge the design before the lines. A correct line in the wrong place or behind a
 
 The user's own code rules (the Code Rules and Process Rules in their CLAUDE.md) are the standard. Read them and review against each one. The lenses below are the minimum, not a replacement.
 
-Raise only the lenses that produce a finding, with file and line; do not list empty ones.
+Raise only the lenses that produce a finding, with file and line; do not list empty ones. For a diff with no production code (a doc, a prompt, a skill), only the contracts lens, the cold read and the deletion pass apply; say the rest were skipped.
 
-**Pass A: architecture and contracts (lenses 1-5).** Before any finding, draw the changed flow as one mermaid diagram (load `explain-code`): the entry point, each new or changed unit, which unit owns each fact, and where the layer boundaries sit. Draw from the code you read, not from the PR description. Then judge:
+**Pass A: architecture and contracts (lenses 1-6).** Before any finding, draw the changed flow as one mermaid diagram (load `explain-code`): the entry point, each new or changed unit, which unit owns each fact, and where the layer boundaries sit. Draw from the code you read, not from the PR description. Then judge:
 
-0. **Contracts.** For each new or changed public signature, class or type: is the interface the smallest that works? Does the type make the wrong call impossible (one constructor, the object instead of an id, a distinct type per kind, no flag arguments)? Does the signature tell the truth about what can fail or be nil? Does it sit at the right layer, with data apart from behaviour? **Data shape:** for each new column, field or record, would a different shape remove a check, a flag or a sync step? Name the states the shape allows that the business forbids (two flags that can disagree, a nullable that is always set, a status plus a timestamp that must match). Propose the shape where those states cannot be stored. Say what the ideal contract is, not only what is wrong.
-1. **One owner per fact.** Anything derived in two places, any copy kept in sync (a column that mirrors another, an id matched by string, the same query written twice). Name the owner it should have.
-2. **No impossible-state code.** A guard, nil check, raise, rescue, retry or else-branch needs a traced outside-input path or a real concurrent writer. If only our own code reaches it, the fix is to make the case unrepresentable (hold the object, not an id; pass the value in), not to guard it. A guard that exists only to narrow a type is this finding. A spec that asserts the impossible state belongs to the same finding.
-3. **Decide, then act.** A flow that interleaves checks with actions and rechecks the same preconditions at each step wants a pure function returning an action and one dispatcher.
-4. **Third-party quirks stay in the adapter.** Generic code that names a provider or matches its strings.
-5. **Alerts.** A page or error-level report for something a human cannot act on yet (an expected wait, a self-healing failure) is noise. A gauge that can stop emitting needs no-data to alert.
+1. **Contracts.** For each new or changed public signature, class or type: is the interface the smallest that works? Does the type make the wrong call impossible (one constructor, the object instead of an id, a distinct type per kind, no flag arguments)? Does the signature tell the truth about what can fail or be nil? Does it sit at the right layer, with data apart from behaviour? **Data shape:** for each new column, field or record, would a different shape remove a check, a flag or a sync step? Name the states the shape allows that the business forbids (two flags that can disagree, a nullable that is always set, a status plus a timestamp that must match). Propose the shape where those states cannot be stored. Say what the ideal contract is, not only what is wrong.
+2. **One owner per fact.** Anything derived in two places, any copy kept in sync (a column that mirrors another, an id matched by string, the same query written twice). Name the owner it should have.
+3. **No impossible-state code.** A guard, nil check, raise, rescue, retry or else-branch needs a traced outside-input path or a real concurrent writer. If only our own code reaches it, the fix is to make the case unrepresentable (hold the object, not an id; pass the value in), not to guard it. A guard that exists only to narrow a type is this finding. A spec that asserts the impossible state belongs to the same finding.
+4. **Decide, then act.** A flow that interleaves checks with actions and rechecks the same preconditions at each step wants a pure function returning an action and one dispatcher.
+5. **Third-party quirks stay in the adapter.** Generic code that names a provider or matches its strings.
+6. **Alerts.** A page or error-level report for something a human cannot act on yet (an expected wait, a self-healing failure) is noise. A gauge that can stop emitting needs no-data to alert.
+
 **Pass A also reads the code as a stranger would.**
 
 - **Cold read.** Read the diff once without the PR description. Each place you had to stop and ask "what is this?" is a finding: a name that does not say what the thing is, a comment that tells history instead of the current rule, a function that does two jobs, a bare number or string whose meaning is not named (a magic number wants a named constant).
 - **Deletion pass.** For each added line, ask what breaks if it is removed. If nothing, name it: an unused parameter, a speculative branch, a spec that repeats another. Compare the diff size to a one-line description of the feature.
 
-**Pass B: correctness (lenses 6-9).** Only after Pass A. Trace on the design as it stands; if Pass A found a design that should change, say so and trace lightly.
+**Pass B: correctness (lenses 7-10).** Only after Pass A. Trace on the design as it stands; if Pass A found a design that should change, say so and trace lightly.
 
-6. **Money and state.** Amounts, balances, ledger entries, state transitions: trace the external result against the local commit against the retry path. Review these as if nothing else is in the diff. Trace one real case with actual numbers end to end (a balance of 100 with 40 pending); double subtraction and unit mismatches only show up with values.
-7. **Concurrency.** For each lock or recheck, name the two actors that can interleave and what schedules them. A race with no second actor is not a finding; one with a second actor is.
-8. **Failure modes.** Run the `error-census` skill on the diff: every way it can fail, which ones outside input can really cause, and what the operator sees and can safely rerun.
-9. **Integration.** What other services, events, clients or runbooks see this change? List what you could not verify from the repo as questions.
+7. **Money and state.** Amounts, balances, ledger entries, state transitions: trace the external result against the local commit against the retry path. Review these as if nothing else is in the diff. Trace one real case with actual numbers end to end (a balance of 100 with 40 pending); double subtraction and unit mismatches only show up with values.
+8. **Concurrency.** For each lock or recheck, name the two actors that can interleave and what schedules them. A race with no second actor is not a finding; one with a second actor is.
+9. **Failure modes.** Run the `error-census` skill on the diff: every way it can fail, which ones outside input can really cause, and what the operator sees and can safely rerun.
+10. **Integration.** What other services, events, clients or runbooks see this change? List what you could not verify from the repo as questions.
 
 ## 4. Prove each finding before raising it
 
@@ -70,7 +70,6 @@ Raise only the lenses that produce a finding, with file and line; do not list em
   - Impossible-state code that has its own spec survives, because the spec asserts the impossible case; find those by tracing, not by mutation.
   - Examples no break killed are mostly happy paths. That is not proof they are redundant; say so.
 - Name the gaps: the finding no spec would catch.
-- When done, tear the worktree's databases and containers down.
 
 ## 6. Post comments
 
