@@ -14,5 +14,4 @@ General rules for writing and reviewing code. Agents read this file when buildin
 - **Prefer strong types and named constants over primitives.**
 - **Page a human only for what a human must act on.** A failure that often resolves itself gets a warning log, and an alert only after it fails N times in a row.
 - **Write the fewest specs that catch a realistic regression.** Don't test constants, trivial round trips, private helpers, or the same rule once per surface. Each spec states the regression it guards.
-- **Comments state the current invariant**, not the review or debugging history behind it. No round numbers, no "the reviewer flagged", no "this PR". History belongs in the commit message and PR body.
 - **Don't let a slow or failing side call stall a live decision.** Persistence is for recovery and audit; don't make it a read path the hot path blocks on.
