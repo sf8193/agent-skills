@@ -54,7 +54,7 @@ Raise only the lenses that produce a finding, with file and line; do not list em
 
 **Pass A also reads the code as a stranger would.**
 
-- **Cold read.** Read the diff once without the PR description. Each place you had to stop and ask "what is this?" is a finding: a name that does not say what the thing is, a function that does two jobs, a bare number or string whose meaning is not named (a magic number wants a named constant).
+- **Cold read.** Read the diff once without the PR description. Each place you had to stop and ask "what is this?" is a finding: a name that does not say what the thing is, a comment that restates the code or tells history, a function that does two jobs, a bare number or string whose meaning is not named (a magic number wants a named constant).
 - **Deletion pass.** For each added line, ask what breaks if it is removed. If nothing, name it: an unused parameter, a speculative branch, a spec that repeats another. Compare the diff size to a one-line description of the feature.
 
 **Pass B: correctness (lenses 3-6).** Only after Pass A. Trace on the design as it stands; if Pass A found a design that should change, say so and trace lightly.
