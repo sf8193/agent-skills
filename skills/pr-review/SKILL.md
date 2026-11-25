@@ -23,15 +23,24 @@ Read-only on the code under review. Findings are guesses until traced. A wrong f
 - Map where each changed (not new) function or accessor is called (`grep -rn`), and count call sites. A changed meaning with many unchanged callers is an integration finding.
 - Read specs second, to see what the author thinks the behaviour is.
 
-## 3. Lenses
+## 3. Architecture first, then correctness
 
-Walk each. Raise only the lenses that produce a finding, with file and line; do not list empty ones.
+Judge the design before the lines. A correct line in the wrong place or behind a weak contract is still a finding, and it makes later line findings moot.
 
+The user's own code rules (the Code Rules and Process Rules in their CLAUDE.md) are the standard. Read them and review against each one. The lenses below are the minimum, not a replacement.
+
+Raise only the lenses that produce a finding, with file and line; do not list empty ones.
+
+**Pass A: architecture and contracts (lenses 1-5).** Before any finding, draw the changed flow as one mermaid diagram (load `explain-code`): the entry point, each new or changed unit, which unit owns each fact, and where the layer boundaries sit. Draw from the code you read, not from the PR description. Then judge:
+
+0. **Contracts.** For each new or changed public signature, class or type: is the interface the smallest that works? Does the type make the wrong call impossible (one constructor, the object instead of an id, a distinct type per kind, no flag arguments)? Does the signature tell the truth about what can fail or be nil? Does it sit at the right layer, with data apart from behaviour? Say what the ideal contract is, not only what is wrong.
 1. **One owner per fact.** Anything derived in two places, any copy kept in sync (a column that mirrors another, an id matched by string, the same query written twice). Name the owner it should have.
 2. **No impossible-state code.** A guard, nil check, raise, rescue, retry or else-branch needs a traced outside-input path or a real concurrent writer. If only our own code reaches it, the fix is to make the case unrepresentable (hold the object, not an id; pass the value in), not to guard it. A guard that exists only to narrow a type is this finding. A spec that asserts the impossible state belongs to the same finding.
 3. **Decide, then act.** A flow that interleaves checks with actions and rechecks the same preconditions at each step wants a pure function returning an action and one dispatcher.
 4. **Third-party quirks stay in the adapter.** Generic code that names a provider or matches its strings.
 5. **Alerts.** A page or error-level report for something a human cannot act on yet (an expected wait, a self-healing failure) is noise. A gauge that can stop emitting needs no-data to alert.
+**Pass B: correctness (lenses 6-8).** Only after Pass A. Trace on the design as it stands; if Pass A found a design that should change, say so and trace lightly.
+
 6. **Money and state.** Amounts, balances, ledger entries, state transitions: trace the external result against the local commit against the retry path. Review these as if nothing else is in the diff.
 7. **Concurrency.** For each lock or recheck, name the two actors that can interleave and what schedules them. A race with no second actor is not a finding; one with a second actor is.
 8. **Integration.** What other services, events, clients or runbooks see this change? List what you could not verify from the repo as questions.
@@ -68,7 +77,7 @@ Posting under the user's account needs their word for that PR, unless they alrea
 
 ## 7. Report to the user
 
-- Line 1 is the verdict. Then one real example. Then the decisions, each naming its object.
+- Line 1 is the verdict. Then the mermaid diagram from Pass A. Then one real example. Then the decisions, each naming its object.
 - Add one line per cleared candidate from §4, so the user sees it was checked.
 - Say what you covered and what you did not (PRs not read, specs not read, mutation only on one file).
 - Mark unverified items. Do not pass off a bot's or author's claim as checked.
