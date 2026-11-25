@@ -15,7 +15,7 @@ Allowed: <tests only | prod in X>. Not allowed: <prod changes, testdata, other s
 - For experiments on prod code, use `go test -overlay`. Never edit prod files in this worktree.
 - If a correct test FAILS on the current code, you've found a real bug. Don't change prod code and don't weaken the assertion. Report the bug with its input, expected value, actual value, and file:line.
 - Skip anything marked for another step or for the user to decide.
-- Code you add follows the user's code rules: the Code Rules in their CLAUDE.md or AGENTS.md (follow any `@` include to the file it names), else `rules/code-rules.md` in the agent-skills repo. Read them before writing.
+- Code you add follows the user's code rules: the Code Rules in their CLAUDE.md or AGENTS.md (follow any `@` include to the file it names), else `rules/code-rules.md` in the agent-skills repo. Read them before writing. Before you hand back, list each rule by name with where your change meets it or "not touched".
 - Write the fewest specs that catch a realistic regression. Don't test constants, trivial round trips, private helpers, or the same rule once per surface. Each spec states the regression it guards.
 
 ## Proof required

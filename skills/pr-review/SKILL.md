@@ -50,7 +50,7 @@ Raise only the lenses that produce a finding, with file and line; do not list em
 **Pass A: architecture and contracts (lenses 1-2).** Before any finding, draw the changed flow as one mermaid diagram (load `explain-code`): the entry point, each new or changed unit, which unit owns each fact, and where the layer boundaries sit. Draw from the code you read, not from the PR description. Then judge:
 
 1. **Contracts.** For each new or changed public signature, class or type: is the interface the smallest that works? Does the type make the wrong call impossible (one constructor, the object instead of an id, a distinct type per kind, no flag arguments)? Does the signature tell the truth about what can fail or be nil? Does it sit at the right layer, with data apart from behaviour? **Data shape:** for each new column, field or record, would a different shape remove a check, a flag or a sync step? Name the states the shape allows that the business forbids (two flags that can disagree, a nullable that is always set, a status plus a timestamp that must match). Propose the shape where those states cannot be stored. Say what the ideal contract is, not only what is wrong.
-2. **The user's code rules.** For each rule in their code rules, find the added code that breaks it, and name the rule. Their rules are the Code Rules in their CLAUDE.md or AGENTS.md (follow any `@` include to the file it names, because a reviewer reading the file sees only that line); if they have none, use `rules/code-rules.md` in the agent-skills repo this skill ships in (`../../rules/code-rules.md` from this folder). A gauge that can stop emitting also needs a no-data alert.
+2. **The user's code rules.** For each rule in their code rules, find the added code that breaks it, and name the rule. Their rules are the Code Rules in their CLAUDE.md or AGENTS.md (follow any `@` include to the file it names, because a reviewer reading the file sees only that line); if they have none, use `rules/code-rules.md` in the agent-skills repo this skill ships in (`../../rules/code-rules.md` from this folder). A gauge that can stop emitting also needs a no-data alert. Name the rule on every finding. Then list every rule by its bold name with either its finding or "none, checked <files and what you looked at>"; a rule missing from the list means the review is not done.
 
 **Pass A also reads the code as a stranger would.**
 
@@ -96,6 +96,7 @@ Posting under the user's account needs their word for that PR, unless they alrea
 ## 7. Report to the user
 
 - Line 1 is the verdict. Then the mermaid diagram from Pass A. Then one real example. Then the decisions, each naming its object.
+- Show the per-rule list from lens 2: every code rule by name, with its finding or "none, checked ...". Count the lines against the rules file.
 - Add one line per cleared candidate from §4, so the user sees it was checked.
 - Say what you covered and what you did not (PRs not read, specs not read, mutation only on one file).
 - Mark unverified items. Do not pass off a bot's or author's claim as checked.
