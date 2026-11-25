@@ -43,7 +43,7 @@ If you cannot read every production file at the size you are in, say so in §7 a
 
 Judge the design before the lines. A correct line in the wrong place or behind a weak contract is still a finding, and it makes later line findings moot.
 
-The user's own code rules (the Code Rules and Process Rules in their CLAUDE.md) are the standard. Read them and review against each one. The lenses below are the minimum, not a replacement.
+The user's own code rules (the Code Rules and Process Rules in their CLAUDE.md, AGENTS.md or GEMINI.md, whichever the agent does not load by itself: read it explicitly) are the standard. Read them and review against each one. The lenses below are the minimum, not a replacement.
 
 Raise only the lenses that produce a finding, with file and line; do not list empty ones. For a diff with no production code (a doc, a prompt, a skill), only the contracts lens, the cold read and the deletion pass apply; say the rest were skipped.
 
@@ -112,3 +112,9 @@ Posting under the user's account needs their word for that PR, unless they alrea
 ## 9. Clean up
 
 Remove the review worktree and its databases and containers when the user says they are done.
+
+## Other agents
+
+- **Loading a named skill** (`explain-code`, `error-census`): in Claude Code use the Skill tool; elsewhere read that skill's `SKILL.md` and follow it.
+- **Subagents** (§2b): Claude Code Agent tool; agy `invoke_subagent` (`self` for anything that runs tests or `gh`, `research` for read-only readers); Codex its sub-agent tool, else `codex exec` in the worktree. With none, work alone and say the verifier step was skipped.
+- **Rules files:** agy loads `AGENTS.md` and `GEMINI.md` but not `CLAUDE.md`; Claude Code the reverse. Read the other one by hand.
