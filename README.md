@@ -11,6 +11,9 @@ Eight Claude Code / Codex skills and two Claude Code mods. `design-converge` and
 7. **project-pm** - act as project manager for a multi-session engineering project: order work in the project's tracker, verify worker reports against the project's rollout ladder, and spot blocked workers.
 8. **pr-review** - adversarially review a PR or a stack. Read the whole production diff, draw the flow as a mermaid diagram, judge architecture and contracts before correctness against the team's code rules (one owner per fact, no impossible-state code, decide then act), prove every finding from a live entry point, mutation-test the specs, post inline comments on the PR that adds each line, then sort the author's replies and own what you got wrong.
 
+## Rules
+`rules/code-rules.md` holds the general code rules the skills check against (one owner per fact, total functions, deep modules, safe to run twice). Load it from your agent's rules file: Claude Code with an `@` include in `CLAUDE.md`; agy with a symlink at `~/.gemini/config/AGENTS.md`, since agy does not expand `@path`. `pr-review` reads it when the user has no code rules of their own.
+
 ## Mods
 Claude Code mods (v2.1.287+), in `mods/`. Load one with `claude --plugin-dir mods/<name>`.
 
