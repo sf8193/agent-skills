@@ -12,6 +12,7 @@ Read-only on the code under review. Findings are guesses until traced. A wrong f
 ## 1. Orient
 
 - Find the stack order: for each PR, `gh pr view <n> --json baseRefName,headRefName,headRefOid,files`. A PR whose base is another PR's head is stacked on it. Review at the top head. A PR based on `main` is a stack of one; skip the rest of this bullet.
+- If the PRs are already merged, review the merge range (`git merge-base <bottom head> origin/main`..top head), call the findings follow-ups, and skip §6.
 - Review in a detached worktree at the top head (`git worktree add --detach <worktree dir>/<repo>-review-<pr> <headRefOid>`), never in a shared checkout. Use the worktree directory the user's CLAUDE.md names. Fetch before you read; shared checkouts are stale.
 - Read the repo's own review rules first (`REVIEW.md`, `CLAUDE.md`, `AGENTS.md`, a repo review skill or command) and the project's decisions doc. Do not reopen anything decided there. Apply the rules below on top. If the repo's rules define finding strengths or list what CI already blocks, use theirs in place of §4's strengths, and spend no findings on what CI blocks.
 - Read the PR title and description before the diff. Check the diff does what they say: leftovers of a removal, behaviour the description omits, claims (a flag, a test, a migration) the diff lacks.
