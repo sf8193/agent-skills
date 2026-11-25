@@ -23,6 +23,22 @@ Read-only on the code under review. Findings are guesses until traced. A wrong f
 - Map where each changed (not new) function or accessor is called (`grep -rn`), and count call sites. A changed meaning with many unchanged callers is an integration finding.
 - Read specs second, to see what the author thinks the behaviour is.
 
+## 2b. Size the review
+
+Count production lines only (`git diff --numstat`, leaving out specs, generated files, schemas, lockfiles). The sizes come from three runs: 100 lines read in full alone, 1,087 lines where one reader covered about two thirds, and about 1,900 across 12 PRs where one reader covered 40%.
+
+| Size | Production lines | How |
+|---|---|---|
+| Small | under 300 | Work alone. |
+| Medium | 300 to 1,000 | Work alone, then give each Raise or Block finding to a fresh verifier. |
+| Large | over 1,000 | Split, as below. |
+
+**Large:** you keep orient, the diagram (Pass A needs the whole diff) and the report. Give each slice of about 800 production lines (a group of PRs or files that belong together) to one reader subagent that applies every lens to its slice, not one lens to the whole diff. Each reader returns findings with the trace, its cleared candidates, and the files it did not read. Run the §5 spec review and mutation pass as one more agent, only after the user agrees.
+
+**Verifier (medium and large):** one fresh agent per Raise or Block finding. Give it the question and the code, never your claim: an anchored reviewer confirms a wrong claim. Notes skip it. Drop or downgrade any finding it cannot reproduce.
+
+If you cannot read every production file at the size you are in, say so in §7 and ask before reporting a partial review as the review.
+
 ## 3. Architecture first, then correctness
 
 Judge the design before the lines. A correct line in the wrong place or behind a weak contract is still a finding, and it makes later line findings moot.
