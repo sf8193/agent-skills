@@ -21,7 +21,7 @@ Claude Code mods (v2.1.287+), in `mods/`. Load one with `claude --plugin-dir mod
 - **guards** - refuses Bash commands behind past incidents (`gt sync`, `git stash`, `tmux kill` without `-S`, a piped test run committed in the same command). Edit `guards.ts` for your own rules.
 
 ## Install
-Copy the folders in `skills/` into `~/.claude/skills/` (Claude Code) or `~/.agents/skills/` (Codex). To share with a team, put them in `.claude/skills/` inside the repo. Then ask for them by name (`/design-converge`, `/verified-steps`) or describe the work; the descriptions make them trigger on redesigns and large or risky changes.
+Clone the repo, then run `./install.sh`. It symlinks every skill into Claude Code (`~/.claude/skills`), Codex (`~/.agents/skills`) and agy (`~/.gemini/config/skills`), links the shared code rules for agy, and prints the one line to add to your `CLAUDE.md` so Claude Code loads the rules. It is safe to rerun and never overwrites a real file or folder. To share with a team instead, put the folders in `.claude/skills/` inside the repo. Then ask for the skills by name (`/design-converge`, `/verified-steps`) or describe the work; the descriptions make them trigger on redesigns and large or risky changes.
 
 ## Notes
 - Written for a Go codebase with a money path (trading). The examples and the checks are Go-flavored (`go test -overlay`, `GOTOOLCHAIN`, `-race`). Swap in your own toolchain's equivalents.
