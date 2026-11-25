@@ -47,7 +47,7 @@ The user's own code rules (the Code Rules and Process Rules in their CLAUDE.md) 
 
 Raise only the lenses that produce a finding, with file and line; do not list empty ones. For a diff with no production code (a doc, a prompt, a skill), only the contracts lens, the cold read and the deletion pass apply; say the rest were skipped.
 
-**Pass A: architecture and contracts (lenses 1-6).** Before any finding, draw the changed flow as one mermaid diagram (load `explain-code`): the entry point, each new or changed unit, which unit owns each fact, and where the layer boundaries sit. Draw from the code you read, not from the PR description. Then judge:
+**Pass A: architecture and contracts (lenses 1-7).** Before any finding, draw the changed flow as one mermaid diagram (load `explain-code`): the entry point, each new or changed unit, which unit owns each fact, and where the layer boundaries sit. Draw from the code you read, not from the PR description. Then judge:
 
 1. **Contracts.** For each new or changed public signature, class or type: is the interface the smallest that works? Does the type make the wrong call impossible (one constructor, the object instead of an id, a distinct type per kind, no flag arguments)? Does the signature tell the truth about what can fail or be nil? Does it sit at the right layer, with data apart from behaviour? **Data shape:** for each new column, field or record, would a different shape remove a check, a flag or a sync step? Name the states the shape allows that the business forbids (two flags that can disagree, a nullable that is always set, a status plus a timestamp that must match). Propose the shape where those states cannot be stored. Say what the ideal contract is, not only what is wrong.
 2. **One owner per fact.** Anything derived in two places, any copy kept in sync (a column that mirrors another, an id matched by string, the same query written twice). Name the owner it should have.
@@ -55,18 +55,23 @@ Raise only the lenses that produce a finding, with file and line; do not list em
 4. **Decide, then act.** A flow that interleaves checks with actions and rechecks the same preconditions at each step wants a pure function returning an action and one dispatcher.
 5. **Third-party quirks stay in the adapter.** Generic code that names a provider or matches its strings.
 6. **Alerts.** A page or error-level report for something a human cannot act on yet (an expected wait, a self-healing failure) is noise. A gauge that can stop emitting needs no-data to alert.
+7. **Easy to grok.** Four questions, each answered with file and line:
+   - **Ask or change, never both.** Does any method that answers a question also change state, or raise to steer the flow? A getter that picks a record or raises is the usual case.
+   - **Total functions, validation at the top.** Does each function answer every input it can receive? Is input checked at the first line of the function, and for outside input at the entry (controller, handler, mutation), so inner code trusts what it gets? An exception that stops a loop over many records for one bad record is this finding.
+   - **One hop.** Can a reader understand the function without opening three others? Flag long call chains through associations, state set far from where it is read, and a name that does not say what the code does (a lock named for sells that also guards buys).
+   - **Rerunnable and reversible.** Is the operation safe to run twice, can it preview first (dry run), and can someone diagnose or undo it from its own logs?
 
 **Pass A also reads the code as a stranger would.**
 
 - **Cold read.** Read the diff once without the PR description. Each place you had to stop and ask "what is this?" is a finding: a name that does not say what the thing is, a comment that tells history instead of the current rule, a function that does two jobs, a bare number or string whose meaning is not named (a magic number wants a named constant).
 - **Deletion pass.** For each added line, ask what breaks if it is removed. If nothing, name it: an unused parameter, a speculative branch, a spec that repeats another. Compare the diff size to a one-line description of the feature.
 
-**Pass B: correctness (lenses 7-10).** Only after Pass A. Trace on the design as it stands; if Pass A found a design that should change, say so and trace lightly.
+**Pass B: correctness (lenses 8-11).** Only after Pass A. Trace on the design as it stands; if Pass A found a design that should change, say so and trace lightly.
 
-7. **Money and state.** Amounts, balances, ledger entries, state transitions: trace the external result against the local commit against the retry path. Review these as if nothing else is in the diff. Trace one real case with actual numbers end to end (a balance of 100 with 40 pending); double subtraction and unit mismatches only show up with values.
-8. **Concurrency.** For each lock or recheck, name the two actors that can interleave and what schedules them. A race with no second actor is not a finding; one with a second actor is.
-9. **Failure modes.** Run the `error-census` skill on the diff: every way it can fail, which ones outside input can really cause, and what the operator sees and can safely rerun.
-10. **Integration.** What other services, events, clients or runbooks see this change? List what you could not verify from the repo as questions.
+8. **Money and state.** Amounts, balances, ledger entries, state transitions: trace the external result against the local commit against the retry path. Review these as if nothing else is in the diff. Trace one real case with actual numbers end to end (a balance of 100 with 40 pending); double subtraction and unit mismatches only show up with values.
+9. **Concurrency.** For each lock or recheck, name the two actors that can interleave and what schedules them. A race with no second actor is not a finding; one with a second actor is.
+10. **Failure modes.** Run the `error-census` skill on the diff: every way it can fail, which ones outside input can really cause, and what the operator sees and can safely rerun.
+11. **Integration.** What other services, events, clients or runbooks see this change? List what you could not verify from the repo as questions.
 
 ## 4. Prove each finding before raising it
 
