@@ -40,6 +40,9 @@ State the claim the design makes, e.g. "fixes class X, not Y".
 ## 4. Audit design × cases
 For every case, give a verdict: **same / fixed / changed (intentional) / out of scope / REGRESSION / GAP**, with the reasoning. A fresh agent should do this, not the author. Regressions and gaps block convergence. Changes need the user's sign-off. If the census applies, re-run it on the new design.
 
+## 4b. Code rules on the design
+Check the design, before any code exists, against the user's code rules (their CLAUDE.md or AGENTS.md Code Rules, following any `@` include; else `rules/code-rules.md` in the agent-skills repo). List every rule by its bold name with the design element that satisfies it, the one it breaks, or "n/a, <why>". Design time is when these are cheapest to fix: the public interface (rule **Deep modules**: what callers say or ask, and what stays private), the owner of each fact, the pure decision function and its one dispatcher, and where each input is validated. Draw the interface as a mermaid diagram with callers on one side and what the module hides on the other. A rule left off the list, or a broken rule with no user sign-off, blocks convergence.
+
 ## 5. Independent peer critique, in writing
 Use a peer with different context:
 - If a live session owns the related code, ask that session.
@@ -53,6 +56,7 @@ Keep a decisions log in the handoff (a date, the decision, why). Present every d
 ## 7. Loop until converged
 Revise the design into `design_v2.md` and so on, then re-audit only the affected cases. The design has converged when:
 - the audit shows 0 regressions and 0 gaps, and no census row is left UNVERIFIED or BUG-ONLY-but-surviving;
+- every code rule is on the section 4b list, and none is broken without the user's sign-off;
 - the peer approves;
 - the user has signed off on each intentional change;
 - the design adds nothing the constraints forbid (re-check each constraint explicitly at the end of the doc).
