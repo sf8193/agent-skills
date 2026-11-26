@@ -39,7 +39,7 @@ Write `STEPn.md` in the scratchpad from `templates/builder-brief.md`. The builde
 - Run under the **CI toolchain** (`GOTOOLCHAIN=go<version from go.mod>`). Coverage and vet behaviour differ between Go versions.
 
 ## 5. Adversarial review (a fresh agent, in its own worktree)
-Spawn a new agent from `templates/reviewer-brief.md`. It must not reuse a builder's context, because the value comes from not sharing the builder's assumptions. Tell it:
+Spawn a new agent from `templates/reviewer-brief.md`. It must not reuse a builder's context, because the value comes from not sharing the builder's assumptions. Every review round, including a follow-up or a short fix re-check, sends the whole template; your own questions go under `<step-specific checks>`, never in place of it. A reviewer answers what it is asked, so a brief of narrow test-provable questions skips the rules, the repo conventions and the design shape. Tell it:
 - "Assume mistakes were made. Prove every finding by running something."
 - Create its own worktree from the step's base, apply the diff, and remove the worktree at the end.
 - Hunt for:
@@ -51,6 +51,7 @@ Spawn a new agent from `templates/reviewer-brief.md`. It must not reuse a builde
   - flakiness (`-count=3 -shuffle=on -race`).
   - new error returns, guards, nil checks or omit-able struct literals the step adds or keeps: run the `error-census` skill on the diff and report every BUG-ONLY row it leaves in.
   - code that breaks the user's CLAUDE.md code rules or has a weak contract: run the `pr-review` skill's Pass A on the diff and report each broken rule by name.
+  - code that breaks the repo's own conventions (its `AGENTS.md` and the `.claude/skills` guides for the touched paths), and design shape a team reviewer would push back on (logic in the caller instead of the service, two UI elements answering one question, a call that only fetches a constant, an overlapping open PR). These need no failing test.
 - Compare the diff and the report to the "Approved plan" in the brief. List every difference. A change that was not posted to the user beforehand is a FAIL, whatever the code quality.
 - Return a verdict (PASS / PASS WITH FIXES / FAIL) and numbered findings, each with its evidence and the exact fix.
 
